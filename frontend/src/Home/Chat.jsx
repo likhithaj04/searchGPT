@@ -2,13 +2,15 @@ import React, { useState } from 'react'
 import api from '../utils/api'
 
 export default function Chat() {
-  
+const [threadId] = useState(
+  () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
+);
   const [data,setData]=useState('')
   const [messages,setMessages]=useState([])
+  const [loading,setLoading]=useState(false)
 
  const handlleCLick = async () => {
   if (!data.trim()) return;
-
   const userMessage = data;
 
   setMessages(prev => [
@@ -20,15 +22,14 @@ export default function Chat() {
   ]);
 
   setData("");
-
+setLoading(true)
   try {
     // console.log("res.sent");
-    
     const res = await api.post("/search", {
-      query: userMessage
-      
+      question: userMessage,
+      threadId:threadId
     });
-// console.log("Tool result:", res.data.data);
+setLoading(false)
     setMessages(prev => [
       ...prev,
       {
@@ -53,6 +54,8 @@ export default function Chat() {
    <div className="h-screen flex flex-col bg-gray-300">
       
       <div className="flex-1 overflow-y-auto p-4">
+
+
   {messages.map((msg, index) => (
     <div
       key={index}
@@ -73,6 +76,18 @@ export default function Chat() {
       </div>
     </div>
   ))}
+        {loading && (
+  <div className="flex justify-start mb-3">
+    <div className="bg-white px-4 py-2 rounded-2xl flex gap-1">
+            <span className="animate-pulse">Thinking</span>
+      <span className="animate-pulse delay-200">.</span>
+            <span className="animate-pulse delay-400">.</span>
+      <span className="animate-pulse delay-500">.</span>
+
+    </div>
+  </div>
+)}
+
 </div>
 
       <div className="p-4">
