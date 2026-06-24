@@ -5,6 +5,7 @@ import { tavily } from "@tavily/core";
 import readline from 'node:readline/promises'
 import cors from 'cors'
 import NodeCache from 'node-cache';
+import signupRouter from './routes/signin.js'
 
 const app = express();
 app.use(express.json())
@@ -244,6 +245,8 @@ app.post("/search", async (req, res) => {
 // }
 // main().catch(console.error);
 
+
+app.use("/user",signupRouter)
 
 async function searchWeb({ query }) {
   console.log("calling WEBSEARCH.......");
