@@ -20,11 +20,11 @@ model Data{
   created_at DateTime @default(now())
 }
 
-model User{
-    id Int @id @default(autoincrement())
-    uname String?
-    email String
-    password String?
-    created_at DateTime @default(now())
-
+model User {
+  id         String   @id @db.Uuid
+  name       String?
+  email      String   @unique
+  avatarUrl  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
