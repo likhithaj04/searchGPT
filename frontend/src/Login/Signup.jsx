@@ -1,9 +1,10 @@
-import React from 'react'
+import {useEffect} from 'react'
 import {z} from 'zod'
 import {useForm} from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
 import supabase from '../Auth/supabase'
 import { useNavigate } from "react-router-dom";
+import axios from 'axios'
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -30,6 +31,8 @@ export default function Signup() {
 
   async function onSubmit(formData){
    try {
+    console.log(formData);
+    
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -46,45 +49,86 @@ export default function Signup() {
       }
 
       console.log("Signup successful");
-      console.log(data);
+      // console.log(data);
 
       navigate("/");
     } catch (err) {
       console.error(err);
     }
   }       
-  
+
 const handleGoogleLogin = async () => {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
-    options: {
-      redirectTo: "http://localhost:5173/"
-    }
+    // options: {
+    //   redirectTo: "http://localhost:5173/"
+    // }
   });
-
+console.log(data);
   if (error) {
     console.error(error);
   }
 };
+
+useEffect(() => {
+  async function syncUser() {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    console.log("SESSION:", session);
+
+    if (!session) {
+      console.log("No session");
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        "http://localhost:8000/profile/create",
+        {
+          uname:
+            session.user.user_metadata.full_name ||
+            session.user.user_metadata.uname ||
+            session.user.email.split("@")[0],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        }
+      );
+
+      console.log(res.data);
+    } catch (err) {
+      console.error(err.response?.data || err.message);
+    }
+  }
+
+  syncUser(); 
+
+}, []);
+
+
   return (
     <>
     <div className=' flex flex-col justify-center items-center min-h-screen'>
     <div className=' w-190 flex flex-col justify-center items-center h-110 border rounded-2xl border-black'>
         <form className='flex flex-col justify-center items-center gap-7 ' onSubmit={handleSubmit(onSubmit)}>
             <div className='flex gap-2'>
-                <label htmlFor=''>Name</label>
+                <label htmlFor='uname'>Name</label>
                 <input type='text' className=' border border-black '
                 {...register('uname')}
                 ></input>
             </div>
             <div className='flex gap-2'>
-                <label htmlFor=''>Email</label>
+                <label htmlFor='email'>Email</label>
                 <input type='text' className=' border border-black '
                 {...register('email')}
                 ></input>
             </div>
             <div className='flex gap-2'>
-                <label htmlFor=''>Password</label>
+                <label htmlFor='password'>Password</label>
                 <input type='password' className=' border border-black' 
                 {...register('password')}
                 ></input>

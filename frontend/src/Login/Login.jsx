@@ -4,37 +4,15 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import supabase from '../Auth/supabase';
+import axios from 'axios';
 
 export default function Login() {
       const navigate = useNavigate();
       const [email,setEmail]=useState('');
       const[password,setPassword]=useState('');
     
-//      const formSchema = z.object({
-//     email: z
-//       .string({ required_error: "Name is required" })
-//       .trim()
-//       .min(3, { message: "Name must have atleast 3 characters" })
-//       .max(250, { message: "Maximum characters exceeded" }),
-
-//     password: z
-//       .string({ required_error: "Password is required" })
-//       .trim()
-//       .min(8, { message: "Minimum 8 characters required" })
-//       .max(25, { message: "Maximum 25 characters only" }),
-//   });
-//    const {
-//     register,
-//     handleSubmit,
-//     formState: { errors },
-//   } = useForm({
-//     resolver: zodResolver(formSchema),
-//   });
-
-
-  
   async function handleSubmit(){
-     console.log("submit");
+     console.log("submited");
      const { data, error } = await supabase.auth.signInWithPassword({
   email,
   password,
@@ -48,27 +26,41 @@ if (error) {
   }
 
   useEffect(() => {
-  async function checkUser() {
+  async function syncUser() {
     const {
       data: { session },
     } = await supabase.auth.getSession();
+console.log(await supabase.auth.getSession())
+    if (!session) return;
 
-    if (session) {
-      console.log("Logged In");
-      console.log(session.user);
-    }
+    await axios.post(
+      "http://localhost:8000/profile/create",
+      {
+        uname:
+          session.user.user_metadata.full_name ||
+          session.user.email.split("@")[0],
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      }
+    );
   }
 
-  checkUser();
+  syncUser();
 }, []);
 
-  const handleClick=async()=>{
-     await supabase.auth.signInWithOAuth({
-  provider: "google",
-  options: {
-    redirectTo: 'http://localhost:5173/',
-  },
-});
+ const handleGoogleLogin = async () => {
+  console.log("clicked");
+  
+   const { data, error } = await supabase.auth.signInWithOAuth({
+     provider: "google",
+    //  options: {
+    //    redirectTo: "http://localhost:5173/"
+    //  }
+   });
+   console.log(data);
   }
 
   return (
@@ -77,8 +69,8 @@ if (error) {
         onSubmit={handleSubmit}
       >
         <div className="flex gap-3">
-          <label htmlFor="username" className="w-20 md:w-24">
-            Username
+          <label htmlFor="email" className="w-20 md:w-24">
+          email
           </label>
           <input
             type="text"
@@ -100,16 +92,18 @@ if (error) {
           <input
             type="password"
             className="border border-periwinkle md:py-1 md:px-3"
+                        onChange={(e)=>setPassword(e.target.value)}
+
           />
         </div>
 
         <div className="flex gap-3">
             <button type='submit'
                             className='border rounded-xs border-black p-1 hover:cursor-pointer'>Signup</button>
-        <button type='submit'
-         className='border rounded-xs border-black p-1 hover:cursor-pointer' onClick={()=>handleClick} >Login with google</button>
+        <button  type='button'
+         className='border rounded-xs border-black p-1 hover:cursor-pointer' onClick={handleGoogleLogin} >Login with google</button>
          <div className='flex'>
-            <p className='text-blackcream  font-medium'> Already have an account <span className="cursor-pointer font-bold text-rose-400 ml-1" onClick={()=>navigate('/signup')}>Signup</span></p>
+            <p className='text-blackcream  font-medium'> Don't have an account- signup <span className="cursor-pointer font-bold text-rose-400 ml-1" onClick={()=>navigate('/signup')}>Signup</span></p>
 
           </div>
         </div>

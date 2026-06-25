@@ -5,14 +5,19 @@ import { tavily } from "@tavily/core";
 import readline from 'node:readline/promises'
 import cors from 'cors'
 import NodeCache from 'node-cache';
-import signupRouter from './routes/signin.js'
+// import signupRouter from './routes/signin.js'
+import profileRouter from './routes/profile.js'
 
 const app = express();
+
 app.use(express.json())
+
 app.use(cors({
   origin: 'http://localhost:5173',
   credentials: true
 }));
+
+app.use("/profile",profileRouter)
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const tvly = tavily({ apiKey: process.env.TAVILY_API_KEY });
@@ -246,7 +251,7 @@ app.post("/search", async (req, res) => {
 // main().catch(console.error);
 
 
-app.use("/user",signupRouter)
+// app.use("/user",signupRouter)
 
 async function searchWeb({ query }) {
   console.log("calling WEBSEARCH.......");
