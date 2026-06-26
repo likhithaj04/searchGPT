@@ -13,10 +13,22 @@ datasource db {
   url      = env("DIRECT_URL")
 }
 
-model Data{
-  id Int @id @default(autoincrement())
-  data String
+model Chat{
+  id String @id @default(uuid()) @db.Uuid
+  user User @relation(fields: [user_id],references: [id],onDelete: Cascade)
+  user_id String @db.Uuid
+  title String
   created_at DateTime @default(now())
+  messages Message[]
+}
+
+model Message{
+  id String @id @default(uuid()) @db.Uuid
+  chat Chat @relation(fields: [chat_id],references: [id],onDelete: Cascade)
+  chat_id String @db.Uuid
+  role String //"user" | "assistant"
+  content String @db.Text
+    created_at DateTime @default(now())
 }
 
 model User {
@@ -26,4 +38,5 @@ model User {
   avatarUrl  String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  chats Chat[]
 }

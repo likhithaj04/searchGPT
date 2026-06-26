@@ -1,13 +1,16 @@
 import React, { useState } from 'react'
 import api from '../utils/api'
+import supabase from '../Auth/supabase';
 
 export default function Chat() {
-const [threadId] = useState(
-  () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
-);
+// const [threadId] = useState(
+//   () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
+// );
   const [data,setData]=useState('')
   const [messages,setMessages]=useState([])
   const [loading,setLoading]=useState(false)
+const [threadId, setThreadId] = useState(null);
+
 
  const handlleCLick = async () => {
   if (!data.trim()) return;
@@ -25,9 +28,18 @@ const [threadId] = useState(
 setLoading(true)
   try {
     // console.log("res.sent");
+    const {
+  data: { session },
+} = await supabase.auth.getSession();
+
     const res = await api.post("/search", {
       question: userMessage,
       threadId:threadId
+    },
+  {
+    headers: {
+      Authorization: `Bearer ${session.access_token}`,
+    },
     });
 setLoading(false)
     setMessages(prev => [
@@ -36,7 +48,8 @@ setLoading(false)
         role: "assistant",
       text: res.data.data      }
     ]);
-   
+   setThreadId(res.data.chatId)
+   console.log("Threadid.........",threadId)
   } catch (err) {
     console.log(err);
   }
