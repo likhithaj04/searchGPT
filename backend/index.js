@@ -9,7 +9,7 @@ import NodeCache from 'node-cache';
 import profileRouter from './routes/profile.js'
 import authMiddleware from './middlewares/authMiddleware.js';
 import prisma from './config/dbConfig.js';
-
+import chatRouter from './routes/chat.js'
 const app = express();
 
 app.use(express.json())
@@ -20,6 +20,7 @@ app.use(cors({
 }));
 
 app.use("/profile",profileRouter)
+app.use("/data",chatRouter)
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const tvly = tavily({ apiKey: process.env.TAVILY_API_KEY });
@@ -91,7 +92,7 @@ ${new Date().toUTCString()}
       });
 
       chatId = chat.id;
-      console.log(chatId);
+      // console.log(chatId);
       
     }
 

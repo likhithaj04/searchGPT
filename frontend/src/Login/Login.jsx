@@ -5,40 +5,40 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import supabase from '../Auth/supabase';
 import axios from 'axios';
+import { useAuth } from '../Context/AuthProvider';
 
 export default function Login() {
+  const { session, user, loading } = useAuth();
+
       const navigate = useNavigate();
       const [email,setEmail]=useState('');
       const[password,setPassword]=useState('');
-    
+    const [synced, setSynced] = useState(false);
+
   async function handleSubmit(){
      console.log("submited");
-     const { data, error } = await supabase.auth.signInWithPassword({
+     const {  error } = await supabase.auth.signInWithPassword({
   email,
   password,
 });
 if (error) {
   console.error(error.message);
-} else {
-  console.log(data.session);
-  console.log(data.user);
-}
+} 
   }
 
   useEffect(() => {
+    if(loading) return;
+    if(!user || !session) return
+ if (synced) return; 
   async function syncUser() {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-console.log(await supabase.auth.getSession())
-    if (!session) return;
-
+    try {
     await axios.post(
       "http://localhost:8000/profile/create",
       {
         uname:
-          session.user.user_metadata.full_name ||
-          session.user.email.split("@")[0],
+          user.user_metadata.full_name ||
+           user.user_metadata.uname ||
+          user.email.split("@")[0],
       },
       {
         headers: {
@@ -46,21 +46,27 @@ console.log(await supabase.auth.getSession())
         },
       }
     );
+          setSynced(true);
+            // navigate("/chat");
+  }
+  catch (err) {
+        console.log(err.response?.data || err.message);
+      }
   }
 
   syncUser();
-}, []);
+},  [session, user, loading,synced, navigate]);
 
  const handleGoogleLogin = async () => {
   console.log("clicked");
   
-   const { data, error } = await supabase.auth.signInWithOAuth({
+   const {error} = await supabase.auth.signInWithOAuth({
      provider: "google",
-    //  options: {
-    //    redirectTo: "http://localhost:5173/"
-    //  }
+     options: {
+       redirectTo: "http://localhost:5173/"
+     }
    });
-   console.log(data);
+  //  console.log(data);
   }
 
   return (

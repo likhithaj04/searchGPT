@@ -5,9 +5,11 @@ import {zodResolver} from '@hookform/resolvers/zod'
 import supabase from '../Auth/supabase'
 import { useNavigate } from "react-router-dom";
 import axios from 'axios'
+import { useAuth } from '../Context/AuthProvider'
 
 export default function Signup() {
   const navigate = useNavigate();
+  const {session,user,loading}=useAuth()
 
   const formSchema=z.object({
     uname:z.string({required_error:"Name is required"}).trim(),
@@ -31,9 +33,9 @@ export default function Signup() {
 
   async function onSubmit(formData){
    try {
-    console.log(formData);
+    // console.log(formData);
     
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
@@ -58,30 +60,19 @@ export default function Signup() {
   }       
 
 const handleGoogleLogin = async () => {
-  const { data, error } = await supabase.auth.signInWithOAuth({
+  const { error } = await supabase.auth.signInWithOAuth({
     provider: "google",
-    // options: {
-    //   redirectTo: "http://localhost:5173/"
-    // }
+    options: {
+      redirectTo: "http://localhost:5173/"
+    }
   });
-console.log(data);
-  if (error) {
-    console.error(error);
-  }
+ 
 };
 
 useEffect(() => {
+          if(!user || !session) return
+
   async function syncUser() {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    console.log("SESSION:", session);
-
-    if (!session) {
-      console.log("No session");
-      return;
-    }
 
     try {
       const res = await axios.post(
@@ -99,7 +90,7 @@ useEffect(() => {
         }
       );
 
-      console.log(res.data);
+      // console.log(res.data);
     } catch (err) {
       console.error(err.response?.data || err.message);
     }
