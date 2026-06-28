@@ -103,40 +103,76 @@ useEffect(() => {
 
   return (
     <>
-    <div className=' flex flex-col justify-center items-center min-h-screen'>
-    <div className=' w-190 flex flex-col justify-center items-center h-110 border rounded-2xl border-black'>
-        <form className='flex flex-col justify-center items-center gap-7 ' onSubmit={handleSubmit(onSubmit)}>
-            <div className='flex gap-2'>
-                <label htmlFor='uname'>Name</label>
-                <input type='text' className=' border border-black '
-                {...register('uname')}
-                ></input>
-            </div>
-            <div className='flex gap-2'>
-                <label htmlFor='email'>Email</label>
-                <input type='text' className=' border border-black '
-                {...register('email')}
-                ></input>
-            </div>
-            <div className='flex gap-2'>
-                <label htmlFor='password'>Password</label>
-                <input type='password' className=' border border-black' 
-                {...register('password')}
-                ></input>
-            </div>
-                        <div className='flex  flex-row gap-4'>
-                            <button type='submit'
-                            className='border rounded-xs border-black p-1 hover:cursor-pointer'>Signup</button>
-                            <button onClick={handleGoogleLogin}
-                             className='border rounded-xs border-black p-3 hover:cursor-pointer'>signup using google google</button>
-</div>
- <div className='flex'>
-            <p className='text-blackcream  font-medium'> Already have an account <span className="cursor-pointer font-bold text-rose-400 ml-1" onClick={()=>navigate('/login')}>LogIn</span></p>
+<div className="flex flex-col justify-center items-center min-h-screen bg-gray-50">
+  <div className="w-full max-w-md flex flex-col gap-6 bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
+    <h1 className="text-xl font-semibold text-gray-800 text-center">
+      Create your account
+    </h1>
 
-          </div>
-        </form>
-    </div>
-    </div>
+    <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+      <div className="flex flex-col gap-1">
+        <label htmlFor="uname" className="text-sm font-medium text-gray-700">
+          Name
+        </label>
+        <input
+          id="uname"
+          type="text"
+          className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+          {...register('uname')}
+        />
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <label htmlFor="email" className="text-sm font-medium text-gray-700">
+          Email
+        </label>
+        <input
+          id="email"
+          type="text"
+          className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+          {...register('email')}
+        />
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <label htmlFor="password" className="text-sm font-medium text-gray-700">
+          Password
+        </label>
+        <input
+          id="password"
+          type="password"
+          className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+          {...register('password')}
+        />
+      </div>
+
+      <button
+        type="submit"
+        className="bg-gray-800 text-white rounded-md py-2 text-sm font-medium hover:bg-gray-700 transition cursor-pointer mt-2"
+      >
+        Sign up
+      </button>
+
+      <button
+        type="button"
+        onClick={handleGoogleLogin}
+        className="border border-gray-300 rounded-md py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition cursor-pointer"
+      >
+        Continue with Google
+      </button>
+
+      <p className="text-sm text-gray-500 text-center mt-2">
+        Already have an account?{' '}
+        <span
+          className="font-medium text-gray-800 underline cursor-pointer"
+          onClick={() => navigate('/login')}
+        >
+          Log in
+        </span>
+      </p>
+    </form>
+  </div>
+</div>
     </>
   )
 }

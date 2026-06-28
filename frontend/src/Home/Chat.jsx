@@ -1,14 +1,20 @@
 import React, { useState } from 'react'
 import api from '../utils/api'
 import supabase from '../Auth/supabase';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../Context/AuthProvider';
 
 export default function Chat() {
 // const [threadId] = useState(
 //   () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
 // );
+const navigate=useNavigate()
+   
+  const { session, user, loading,logout } = useAuth();
+
+
   const [data,setData]=useState('')
   const [messages,setMessages]=useState([])
-  const [loading,setLoading]=useState(false)
 const [threadId, setThreadId] = useState(null);
 
 
@@ -28,9 +34,9 @@ const [threadId, setThreadId] = useState(null);
 setLoading(true)
   try {
     // console.log("res.sent");
-    const {
-  data: { session },
-} = await supabase.auth.getSession();
+//     const {
+//   data: { session },
+// } = await supabase.auth.getSession();
 
     const res = await api.post("/search", {
       question: userMessage,
@@ -67,8 +73,27 @@ setLoading(false)
    <div className="h-screen flex flex-col bg-gray-300">
       
       <div className="flex-1 overflow-y-auto p-4">
+        {!session ? (
+          <>
+        <div className='flex justify-end gap-6'>
+             <button className='border border-black rounded-r  px-2 hover:cursor-pointer hover:bg-slate-400' onClick={()=>navigate("/login")}>Login</button>
+                <button className='border border-black rounded-r  px-2 hover:cursor-pointer  hover:bg-slate-400' onClick={()=>navigate("/signup")}>Signup</button>
+        </div>
+        </>
+):(
+          <div className='flex justify-end gap-6'>
 
+<button
+          className="border border-black text-black rounded px-4 py-2"
 
+           onClick={async () => {
+          await logout();
+          navigate("/"); }}
+        >
+          Logout
+        </button>
+        </div>
+)}
   {messages.map((msg, index) => (
     <div
       key={index}

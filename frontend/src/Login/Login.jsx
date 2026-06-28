@@ -70,49 +70,65 @@ if (error) {
   }
 
   return (
-      <form
-        className="flex flex-col items-center justify-center p-2 md:p-5 gap-3 md:gap-10"
-        onSubmit={handleSubmit}
+    
+    <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50">
+  <div className="w-full max-w-md flex flex-col gap-6 bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
+    <h1 className="text-xl font-semibold text-gray-800 text-center">
+      Sign in to your account
+    </h1>
+
+    <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+      <div className="flex flex-col gap-1">
+        <label htmlFor="email" className="text-sm font-medium text-gray-700">
+          Email
+        </label>
+        <input
+          id="email"
+          type="text"
+          className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <label htmlFor="password" className="text-sm font-medium text-gray-700">
+          Password
+        </label>
+        <input
+          id="password"
+          type="password"
+          className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </div>
+
+      <button
+        type="submit"
+        className="bg-gray-800 text-white rounded-md py-2 text-sm font-medium hover:bg-gray-700 transition cursor-pointer mt-2"
       >
-        <div className="flex gap-3">
-          <label htmlFor="email" className="w-20 md:w-24">
-          email
-          </label>
-          <input
-            type="text"
-            className="border border-periwinkle md:py-1 md:px-3"
-            value={email}
-            onChange={(e)=>setEmail(e.target.value)}
-          />
+        Sign up
+      </button>
 
-        </div>
+      <button
+        type="button"
+        onClick={handleGoogleLogin}
+        className="border border-gray-300 rounded-md py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition cursor-pointer"
+      >
+        Continue with Google
+      </button>
 
-        <div className="flex gap-3">
-          <label
-            htmlFor="password"
-            className="w-20 md:w-24"
-          >
-            Password
-          </label>
-
-          <input
-            type="password"
-            className="border border-periwinkle md:py-1 md:px-3"
-                        onChange={(e)=>setPassword(e.target.value)}
-
-          />
-        </div>
-
-        <div className="flex gap-3">
-            <button type='submit'
-                            className='border rounded-xs border-black p-1 hover:cursor-pointer'>Signup</button>
-        <button  type='button'
-         className='border rounded-xs border-black p-1 hover:cursor-pointer' onClick={handleGoogleLogin} >Login with google</button>
-         <div className='flex'>
-            <p className='text-blackcream  font-medium'> Don't have an account- signup <span className="cursor-pointer font-bold text-rose-400 ml-1" onClick={()=>navigate('/signup')}>Signup</span></p>
-
-          </div>
-        </div>
-        </form>
+      <p className="text-sm text-gray-500 text-center mt-2">
+        Don't have an account?{' '}
+        <span
+          className="font-medium text-gray-800 underline cursor-pointer"
+          onClick={() => navigate('/signup')}
+        >
+          Sign up
+        </span>
+      </p>
+    </form>
+  </div>
+</div>
   )
 }

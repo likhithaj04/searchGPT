@@ -1,50 +1,63 @@
-import {createContext,useContext,useEffect,useState} from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import supabase from '../Auth/supabase'
 
-const AuthContext=createContext();
+const AuthContext = createContext();
 
-export default function AuthProvider({children}) {
-    const[session, setSession]=useState(null)
-    const [user,setUser]=useState(null)  
-    const [loading,setLoading]=useState(false)
+export default function AuthProvider({ children }) {
+  const [session, setSession] = useState(null)
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(false)
 
-    useEffect(()=>{
-   async function loadSession(){
-      
-    const{
-      data:{session},
-    }=await supabase.auth.getSession();
+  useEffect(() => {
+    async function loadSession() {
 
-    setSession(session)
-    setUser(session?.user??null)
-          setLoading(false);
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-   }
-   loadSession();
-    
+      setSession(session)
+      setUser(session?.user ?? null)
+      setLoading(false);
 
-   const {
-    data:{subscription}
-   }=supabase.auth.onAuthStateChange((_event,session)=>{
-    setSession(session);
-   setUser(session?.user ?? null);
+    }
+    loadSession();
 
-   })
-       return () => subscription.unsubscribe();
 
-   },[])
+    const {
+      data: { subscription }
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+
+    })
+    return () => subscription.unsubscribe();
+
+  }, [])
+
+  const logout = async () => {
+    console.log("ccc");
+
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.error(error.message);
+      return;
+    }
+
+  };
 
   return (
     <AuthContext.Provider
-    value={{
-      session,
-      user,
-      loading
-    }}
+      value={{
+        session,
+        user,
+        loading,
+        logout
+      }}
     >
       {children}
     </AuthContext.Provider>
   )
 }
 
-export const useAuth=()=>useContext(AuthContext)
+export const useAuth = () => useContext(AuthContext)
