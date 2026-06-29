@@ -10,8 +10,9 @@ export default function Chat() {
 // );
 const navigate=useNavigate()
    
-  const { session, user, loading,logout } = useAuth();
+  const { session, user,logout } = useAuth();
 
+const [loading, setLoading] = useState(false);
 
   const [data,setData]=useState('')
   const [messages,setMessages]=useState([])

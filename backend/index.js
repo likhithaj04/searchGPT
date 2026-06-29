@@ -87,7 +87,7 @@ ${new Date().toUTCString()}
       const chat = await prisma.chat.create({
         data: {
           user_id: req.user.id,
-          title: question.slice(0, 40),
+          title: question.slice(0, 20),
         },
       });
 
@@ -176,6 +176,7 @@ ${new Date().toUTCString()}
 
       if (!toolCalls || toolCalls.length === 0) {
         const aiResponse = assistantMessage.content;
+// console.log("ai........",aiResponse);
 
         await prisma.message.create({
           data: {

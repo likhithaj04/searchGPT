@@ -2,25 +2,28 @@ import prisma from "../config/dbConfig.js";
 import supabase from "../config/supabaseConfig.js";
 
 export const title=async(req,res)=>{
-    const {id}=req.body;
-    console.log(id);
+    console.log("reached");
     
-    const db=await prisma.user.findUnique({
+    const {id}=req.user?.id;
+console.log("req.user.id:", req.user?.id);
+    
+const db = await prisma.chat.findMany({
         where:{
-            id:id
+            user_id:req.user?.id
         },
-            include:{
-                    chats:{
-                        select:{
-                    title:true
-                }
-            }
-            }
-        
-        
+          select: {
+    id: true,
+    title: true,
+  },
     })    
     console.log(db)
-    const titles=db.chats.map(chat=>chat.title)
-    res.send(titles)
+    // console.log(titles);
+    
+    res.send({data:db   })
 }
 
+export const allchats=(req,res)=>{
+    const {id}=req.user?.id
+    console.log(id);
+    
+}

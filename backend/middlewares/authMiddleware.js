@@ -7,7 +7,7 @@ const authMiddlware=async(req,res,next)=>{
   try{
      
     const authHeader=req.headers.authorization;
-
+    //  console.log("middleware hit")
      if (!authHeader) {
       return res.status(401).json({
         success: false,
@@ -30,7 +30,6 @@ const authMiddlware=async(req,res,next)=>{
     }
 
     req.user = user;
-
     next();
   } catch (err) {
     console.error(err);
