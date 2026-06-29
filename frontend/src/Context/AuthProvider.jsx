@@ -25,11 +25,14 @@ export default function AuthProvider({ children }) {
 
     const {
       data: { subscription }
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    } = supabase.auth.onAuthStateChange((_event, newSession) => {
+  setSession(prev => {
+    if (prev?.access_token === newSession?.access_token) return prev; // bail, no update
+    return newSession;
+  });
+  setUser(newSession?.user ?? null);
+})
 
-    })
     return () => subscription.unsubscribe();
 
   }, [])
