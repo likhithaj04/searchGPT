@@ -6,6 +6,7 @@ import readline from 'node:readline/promises'
 import cors from 'cors'
 import NodeCache from 'node-cache';
 import prisma from '../config/dbConfig.js';
+import pdfParse from 'pdf-parser'
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const tvly = tavily({ apiKey: process.env.TAVILY_API_KEY });
@@ -22,6 +23,11 @@ export const searchllm=async (req, res) => {
         success: false,
         message: "Question is required",
       });
+    }
+
+    if(req.file){
+        const pdfData = await pdfparse(req.file.buffer);
+        const text=pdfData.text
     }
 const baseMessages = [
   {
@@ -87,6 +93,26 @@ For coding questions:
 - Distinguish between facts and assumptions.
 - If the answer depends on versions, mention the version.
 
+## Document Context
+
+If a document or extracted text is provided, treat it as the primary source of truth for answering the user's questions.
+
+Guidelines:
+- Carefully read and understand the document before answering.
+- Base your responses only on the document unless the user explicitly asks for external information.
+- If the answer cannot be found in the document, clearly state that it is not present instead of making assumptions.
+- Adapt your analysis to the type of document:
+  - Resume/CV → Review skills, experience, formatting, ATS compatibility, grammar, missing sections, and provide actionable improvement suggestions.
+  - Research paper → Summarize, explain concepts, methodology, findings, strengths, limitations, and answer questions about the content.
+  - Report → Summarize key insights, identify trends, important figures, conclusions, and recommendations.
+  - Documentation/Manual → Explain features, usage, workflows, APIs, and troubleshoot issues using the document.
+  - Contracts/Legal documents → Explain clauses in simple language, highlight obligations, risks, dates, and important terms. Do not provide legal advice.
+  - Books, notes, or study material → Summarize chapters, explain concepts, create quizzes, answer questions, and simplify difficult topics.
+  - Any other document → Infer its purpose and provide the most relevant analysis based on the user's request.
+
+Always prioritize the user's current question. Do not summarize the entire document unless the user explicitly asks for a summary.
+
+If the user asks to compare the document with external knowledge (e.g., latest technologies, job requirements, current standards), use the available web search tool when appropriate and clearly distinguish information from the document and information from external sources.
 ## Web Search
 
 Use the searchWeb tool whenever information could be:
@@ -155,10 +181,20 @@ ${new Date().toUTCString()}
       },
     });
 
+    if(text){
+        messages.push({
+            role:"User",
+            content:question,
+            Document:`Document Context:
+${text}`
+        })
+    }
+    else {
     messages.push({
       role: "user",
       content: question,
     });
+    }
 
     const MAX_RETRIES = 10;
     let count = 0;
