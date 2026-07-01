@@ -3,8 +3,14 @@ const router=Router();
 import {allchats, title} from '../controllers/chat.js'
 import { searchllm } from '../controllers/llmServer.js';
 import authMiddlware from '../middlewares/authMiddleware.js';
+import { upload } from '../middlewares/upload.js';
+// import multer from 'multer';
 
-router.post("/search",authMiddlware,searchllm)
+// const upload = multer({
+//   storage: multer.memoryStorage(),
+// });
+
+router.post("/search",  upload.single("file"),authMiddlware,searchllm)
 
 router.post("/title",authMiddlware,title)
 

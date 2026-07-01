@@ -26,7 +26,7 @@ export const allchats=async(req,res)=>{
     // console.log("hit");
 
     const { chatId } = req.params;
-// console.log(chatId);
+console.log(chatId);
 
     const chats=await prisma.chat.findMany({
         where:{

@@ -21,14 +21,17 @@ model Chat{
   created_at DateTime @default(now())
   messages Message[]
 }
-
-model Message{
-  id String @id @default(uuid()) @db.Uuid
-  chat Chat @relation(fields: [chat_id],references: [id],onDelete: Cascade)
-  chat_id String @db.Uuid
-  role String //"user" | "assistant"
-  content String @db.Text
-    created_at DateTime @default(now())
+model Message {
+  id         String   @id @default(uuid()) @db.Uuid
+  chat       Chat     @relation(fields: [chat_id], references: [id], onDelete: Cascade)
+  chat_id    String   @db.Uuid
+  role       String   // "user" | "assistant"
+  content    String   @db.Text
+  file_url   String?  // cloudinary secure_url
+  file_name  String?  // original filename, for display
+  file_type  String?  // mime type e.g. "application/pdf"
+  public_id  String? 
+  created_at DateTime @default(now())
 }
 
 model User {

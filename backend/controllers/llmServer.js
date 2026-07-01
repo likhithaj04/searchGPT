@@ -6,7 +6,11 @@ import readline from 'node:readline/promises'
 import cors from 'cors'
 import NodeCache from 'node-cache';
 import prisma from '../config/dbConfig.js';
-import pdfParse from 'pdf-parser'
+import { PDFParse } from 'pdf-parse';
+import { readFile } from 'node:fs/promises';
+import { upload } from '../middlewares/upload.js';
+import { uploadToCloudinary} from '../uploads/UploadCloudinary.js';
+
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const tvly = tavily({ apiKey: process.env.TAVILY_API_KEY });
@@ -15,8 +19,13 @@ const myCache = new NodeCache({ stdTTL: 60 * 60 * 24 })
 
 export const searchllm=async (req, res) => {
   try {
-    const { question, threadId } = req.body;
-// console.log("frontend......",threadId);
+    const { question }= req.body
+    const {threadId}=req.body
+// console.log("reached here");
+// console.log("body",req.body);
+// console.log("thread",req.body.threadId);
+// console.log(typeof req.body.threadId);
+
 
     if (!question) {
       return res.status(400).json({
@@ -25,10 +34,27 @@ export const searchllm=async (req, res) => {
       });
     }
 
+const parser = new PDFParse({
+  data: req.file.buffer,
+});
+ let text=''
+ let uploadResult = null;
+
     if(req.file){
-        const pdfData = await pdfparse(req.file.buffer);
-        const text=pdfData.text
+      try{
+        console.log(req.file);
+                const result = await parser.getText();
+                text=result.text || ""
+                 uploadResult = await uploadToCloudinary(req.file);
+                console.log("upload............",uploadResult);
+                
+      }
+     catch(err){
+      console.log(err);
+      
+     }
     }
+
 const baseMessages = [
   {
     role: "system",
@@ -135,6 +161,7 @@ searchWeb({ query: String })
 ## Current UTC Time
 
 ${new Date().toUTCString()}
+
 `,
   },
 ];
@@ -150,7 +177,7 @@ ${new Date().toUTCString()}
       });
 
       chatId = chat.id;
-      // console.log(chatId);
+      console.log(chatId);
       
     }
 
@@ -178,23 +205,34 @@ ${new Date().toUTCString()}
         chat_id: chatId,
         role: "user",
         content: question,
+         file_url: uploadResult?.secure_url || null,
+    file_name: req.file?.originalname || null,
+    file_type: req.file?.mimetype || null,
+    public_id: uploadResult?.public_id || null
       },
     });
 
-    if(text){
-        messages.push({
-            role:"User",
-            content:question,
-            Document:`Document Context:
-${text}`
-        })
-    }
-    else {
-    messages.push({
-      role: "user",
-      content: question,
-    });
-    }
+   if (text) {
+  messages.push({
+    role: "user",
+    content: `
+Question:
+${question}
+
+Uploaded document:
+
+${text}
+`
+  });
+} else {
+  messages.push({
+    role: "user",
+    content: question
+  });
+}
+    
+    // console.log("Messages",messages);
+    
 
     const MAX_RETRIES = 10;
     let count = 0;
@@ -282,8 +320,6 @@ ${text}`
         });
       }
 
-      // Loop continues automatically.
-      // Model now sees tool output and generates final answer.
     }
   } catch (err) {
     console.error(err);

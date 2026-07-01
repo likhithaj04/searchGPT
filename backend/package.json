@@ -14,13 +14,17 @@
     "@prisma/client": "6.19",
     "@supabase/supabase-js": "^2.108.2",
     "@tavily/core": "^0.7.6",
+    "cloudinary": "^2.10.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "groq-sdk": "^1.2.1",
+    "multer": "^2.2.0",
+    "multer-storage-cloudinary": "^4.0.0",
     "node-cache": "^5.1.2",
     "nodemon": "^3.1.14",
-    "pdf-parser": "^1.0.5",
-    "prisma": "6.19"
+    "pdf-parse": "^2.4.5",
+    "prisma": "6.19",
+    "streamifier": "^0.1.1"
   }
 }
