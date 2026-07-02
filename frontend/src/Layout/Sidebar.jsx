@@ -49,6 +49,7 @@ export default function Sidebar() {
       
     navigate("/")
   }
+  
   return (
     <div className="w-64 bg-[#202123] text-white flex flex-col gap-3 p-3">
       <h2 className="text-xl font-semibold mb-8">SearchGPT</h2>

@@ -114,8 +114,10 @@ useEffect(() => {
 
     if (!chatId) {
       setMessages([])
+      setFile(null)
       return
     }
+
     async function loadChats() {
       try {
         const res = await api.post(`/data/${chatId}`,
@@ -143,13 +145,13 @@ useEffect(() => {
 
 
   return (
-    <div className="h-screen flex flex-1 flex-col bg-gray-300 overflow-hidden">
+ <div className="h-screen flex flex-1 flex-col bg-gray-300 overflow-hidden">
   <UserSession session={session} setMessages={setMessages} logout={logout} />
 
-  <div className="flex-1 overflow-y-auto pt-4">
-    <Message messages={messages} loading={loading} />
+  <div className="flex-1 min-h-0 overflow-y-auto pt-4">
+    <Message messages={messages} loading={loading} chatId={chatId} />
   </div>
-
+  
       <ChatInput
         handleChange={handleChange}
         handlleCLick={handlleCLick}

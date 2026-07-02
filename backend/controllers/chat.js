@@ -15,6 +15,9 @@ const db = await prisma.chat.findMany({
     id: true,
     title: true,
   },
+  orderBy: {
+        created_at: "desc",
+      },
     })    
     // console.log(db)
     // console.log(titles);
@@ -28,25 +31,28 @@ export const allchats=async(req,res)=>{
     const { chatId } = req.params;
 console.log(chatId);
 
-    const chats=await prisma.chat.findMany({
-        where:{
-           id:chatId,
-           user_id:req.user?.id
-        },
-        select:{
-            id:true,
-            title:true,
-            messages:{
-                select:{
-                    role:true,
-                    content:true,
-                },
-            orderBy:{
-                created_at:'asc'
-            }
-        }
-        }
-    })
+  const chats = await prisma.chat.findMany({
+  where: {
+    id: chatId,
+    user_id: req.user.id,
+  },
+  select: {
+    id: true,
+    title: true,
+    messages: {
+      select: {
+        role: true,
+        content: true,
+        file_name: true,
+        file_url: true,
+        file_type: true,
+      },
+      orderBy: {
+        created_at: "asc",
+      },
+    },
+  },
+});
         // console.log(chats);
 
     res.json({data:chats})

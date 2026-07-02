@@ -4,17 +4,8 @@ export default function ChatInput({ handleChange, handlleCLick, data, setData, s
   const fileInputRef = useRef(null);
 
   return (
-    <div className="fixed bottom-0 left-0 md:left-64 right-0 bg-gray-300 px-2 pb-2 md:px-4 md:pb-4 pt-3">
+  <div className="bg-gray-300 px-2 pb-2 md:px-4 md:pb-4 pt-3">
       <div className="max-w-4xl mx-auto">
-
-        {file && (
-          <div className="mb-2 flex items-center gap-2 bg-white rounded-lg px-3 py-2 border">
-            <span className="truncate">{file.name}</span>
-            <button className="ml-auto text-red-500" onClick={() => setFile(null)}>
-              ✕
-            </button>
-          </div>
-        )}
 
         <div className="relative">
           <i
@@ -30,23 +21,42 @@ export default function ChatInput({ handleChange, handlleCLick, data, setData, s
               <button className="w-full text-left px-4 py-2 hover:bg-gray-100" onClick={() => fileInputRef.current.click()}>Excel Spreadsheet</button>
             </div>
           )}
+     <div className="w-full border border-slate-900 rounded-2xl px-13 py-3">
+  {file && (
+    <div className="w-fit mb-2 flex items-center gap-2 bg-white rounded-lg px-3 py-2 border">
+      <span className="truncate max-w-40">{file.name}</span>
+      <button
+        className="ml-auto text-red-500"
+        onClick={() => setFile(null)}
+      >
+        ✕
+      </button>
+    </div>
+  )}
 
-          <textarea
-            rows={1}
-            placeholder="Type a message..."
-            value={data}
-            onChange={handleChange}
-            className="w-full border border-slate-900 rounded-2xl pl-9 md:pl-12 pr-9 md:pr-12 py-3 md:py-4 text-base md:text-lg resize-none overflow-hidden min-h-14 md:min-h-15 max-h-50"
-          />
-
-          <input
+  <textarea
+    rows={1}
+    placeholder="Type a message..."
+    value={data}
+    onChange={handleChange}
+    className="
+      w-full
+      bg-transparent
+      outline-none
+      resize-none
+      overflow-hidden
+      text-base md:text-lg
+    "
+  />
+</div>
+         <input
             ref={fileInputRef}
             type="file"
             hidden
             accept=".pdf,.doc,.docx,.txt,.xls,.xlsx,.csv,image/*"
             onChange={handleFile}
+            className=''
           />
-
           <i
             className="fa-solid fa-magnifying-glass-arrow-right absolute right-3 md:right-4 top-1/2 -translate-y-1/2 text-xl md:text-2xl cursor-pointer"
             onClick={handlleCLick}

@@ -34,19 +34,20 @@ export const searchllm=async (req, res) => {
       });
     }
 
-const parser = new PDFParse({
-  data: req.file.buffer,
-});
+
  let text=''
  let uploadResult = null;
 
     if(req.file){
       try{
+        const parser = new PDFParse({
+  data: req.file.buffer,
+});
         console.log(req.file);
                 const result = await parser.getText();
                 text=result.text || ""
                  uploadResult = await uploadToCloudinary(req.file);
-                console.log("upload............",uploadResult);
+                // console.log("upload............",uploadResult);
                 
       }
      catch(err){
@@ -200,6 +201,7 @@ ${new Date().toUTCString()}
     ];
 
 
+
     await prisma.message.create({
       data: {
         chat_id: chatId,
@@ -211,8 +213,27 @@ ${new Date().toUTCString()}
     public_id: uploadResult?.public_id || null
       },
     });
+let doccument = null;
 
-   if (text) {
+ if(text){
+      console.log("reached here ,.....");
+      try{
+       doccument=await prisma.doccument.create({
+        data:{
+          chat_id: chatId,
+         filename: req.file?.originalname,
+         fileurl: uploadResult?.secure_url,
+         extracted: text,
+        }
+      })
+      console.log("added");
+    }catch (err) {
+  console.error(err.message);
+  console.error(err.meta);
+}
+    }
+
+   if (doccument) {
   messages.push({
     role: "user",
     content: `
@@ -221,7 +242,7 @@ ${question}
 
 Uploaded document:
 
-${text}
+${doccument.extracted}
 `
   });
 } else {
@@ -230,7 +251,7 @@ ${text}
     content: question
   });
 }
-    
+   
     // console.log("Messages",messages);
     
 
