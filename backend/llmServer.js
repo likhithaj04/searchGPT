@@ -3,7 +3,6 @@ import Groq from "groq-sdk";
 import express from 'express'
 import { tavily } from "@tavily/core";
 import readline from 'node:readline/promises'
-import cors from 'cors'
 import NodeCache from 'node-cache';
 import prisma from '../config/dbConfig.js';
 import { PDFParse } from 'pdf-parse';
@@ -35,26 +34,26 @@ export const searchllm=async (req, res) => {
     }
 
 
- let text=''
- let uploadResult = null;
+//  let text=''
+//  let uploadResult = null;
 
-    if(req.file){
-      try{
-        const parser = new PDFParse({
-  data: req.file.buffer,
-});
-        console.log(req.file);
-                const result = await parser.getText();
-                text=result.text || ""
-                 uploadResult = await uploadToCloudinary(req.file);
-                // console.log("upload............",uploadResult);
+//     if(req.file){
+//       try{
+//         const parser = new PDFParse({
+//   data: req.file.buffer,
+// });
+//         console.log(req.file);
+//                 const result = await parser.getText();
+//                 text=result.text || ""
+//                  uploadResult = await uploadToCloudinary(req.file);
+//                 // console.log("upload............",uploadResult);
                 
-      }
-     catch(err){
-      console.log(err);
+//       }
+//      catch(err){
+//       console.log(err);
       
-     }
-    }
+//      }
+//     }
 
 const baseMessages = [
   {

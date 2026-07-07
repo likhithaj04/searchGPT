@@ -1,5 +1,7 @@
 import prisma from "../config/dbConfig.js";
 import supabase from "../config/supabaseConfig.js";
+import { documentServices } from "../services/documentService.js";
+import { plainTextService } from "../services/plainTextService.js";
 
 export const title=async(req,res)=>{
     console.log("reached");
@@ -56,4 +58,19 @@ console.log(chatId);
         // console.log(chats);
 
     res.json({data:chats})
+}
+
+export async function chat(req,res){
+
+    if(req.file){
+
+        if(req.file.mimetype.startsWith("image/")){
+            return imageService(req,res);
+        }
+
+        return documentServices(req,res);
+    }
+
+    return plainTextService(req,res);
+
 }
